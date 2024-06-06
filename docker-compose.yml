@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  configsvr1:
+    image: custom-mongo-image
+    command: ["mongod", "--configsvr", "--replSet", "rs-config", "--port", "27019"]
+    ports:
+      - 27019:27019
+    volumes:
+      - ./data/config/configsvr1:/data/db
+
+  shard1_1:
+    image: custom-mongo-image
+    command: ["mongod", "--shardsvr", "--replSet", "rs-shard-1", "--port", "27018"]
+    ports:
+      - 27018:27018
+    volumes:
+      - ./data/shard1_1:/data/db
+
+  shard1_2:
+    image: custom-mongo-image
+    command: ["mongod", "--shardsvr", "--replSet", "rs-shard-1", "--port", "27019"]
+    ports:
+      - 27020:27019
+    volumes:
+      - ./data/shard1_2:/data/db
+
+  shard2_1:
+    image: custom-mongo-image
+    command: ["mongod", "--shardsvr", "--replSet", "rs-shard-2", "--port", "27021"]
+    ports:
+      - 27021:27021
+    volumes:
+      - ./data/shard2_1:/data/db
+
+  mongos:
+    image: custom-mongo-image
+    command: ["mongos", "--configdb", "rs-config/configsvr1:27019", "--port", "27017"]
+    ports:
+      - 27017:27017
